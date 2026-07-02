@@ -37,6 +37,7 @@ function iconDataUrl(rel) {
 }
 const ICON_VOL = iconDataUrl("imgs/actions/volume.png");
 const ICON_MUTED = iconDataUrl("imgs/actions/muted.png");
+const ICON_PAUSED = iconDataUrl("imgs/actions/paused.png");
 
 // ---------- Stream Deck connection ----------
 const args = parseArgs(process.argv.slice(2));
@@ -125,10 +126,12 @@ function renderFeedback(ctx, st) {
     payload.indicator = 0;
     payload.icon = ICON_VOL;
   } else {
+    const showPaused =
+      st.paused && ((st.settings && st.settings.pressAction) || "mute") === "playpause";
     payload.title = st.name || "Sonos";
     payload.value = st.muted ? "Muted" : st.volume + "%";
     payload.indicator = st.muted ? 0 : st.volume;
-    payload.icon = st.muted ? ICON_MUTED : ICON_VOL;
+    payload.icon = st.muted ? ICON_MUTED : showPaused ? ICON_PAUSED : ICON_VOL;
   }
   send({ event: "setFeedback", context: ctx, payload });
 }
@@ -140,6 +143,10 @@ async function initContext(ctx, st) {
       st.device = d;
       try { st.volume = await d.getVolume(); } catch (e) {}
       try { st.muted = await d.getMuted(); } catch (e) {}
+      try {
+        const ts = await d.getCurrentState();
+        st.paused = !(ts === "playing" || ts === "transitioning");
+      } catch (e) {}
     }
   }
   renderFeedback(ctx, st);
@@ -210,6 +217,22 @@ async function handleEvent(ev) {
     case "touchTap": {
       const st = state.get(ctx);
       if (!st || !st.device) break;
+      const press = (st.settings && st.settings.pressAction) || "mute";
+      if (press === "playpause") {
+        const toggle = async (d) => {
+          const ts = await d.getCurrentState();
+          st.paused = ts === "playing" || ts === "transitioning";
+          if (st.paused) await d.pause(); else await d.play();
+        };
+        try { await toggle(st.device); }
+        catch (e) {
+          log("play/pause failed", e && e.message);
+          const d = await resolveDevice(st.settings);
+          if (d) { st.device = d; try { await toggle(d); } catch (e2) { log("play/pause retry failed", e2 && e2.message); } }
+        }
+        renderFeedback(ctx, st);
+        break;
+      }
       st.muted = !st.muted;
       renderFeedback(ctx, st);
       try { await st.device.setMuted(st.muted); }

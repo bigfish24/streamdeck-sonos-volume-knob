@@ -3,8 +3,9 @@
 A dead-simple, reliable **Sonos volume knob** for the Stream Deck+ dials.
 
 - **Rotate** a dial to change volume
-- **Press** (or tap the touch strip) to mute/unmute
-- The LCD shows the room name, volume %, and a level bar
+- **Press** (or tap the touch strip) to mute/unmute — or set it to play/pause
+- The LCD shows the room name, volume %, a level bar, and whether playback is
+  paused
 
 It talks to your speakers **entirely over the local network** (UPnP/SSDP via
 the [`sonos`](https://www.npmjs.com/package/sonos) package). No Sonos account,
@@ -68,8 +69,10 @@ Restart the Stream Deck app.
 3. The property inspector auto-scans the network — pick your speaker/room from
    the dropdown.
 4. **Rotate** to change volume, **press** to mute. Adjust **Step** (% per click)
-   if you want coarser/finer control, and use **Rescan network** if a speaker
-   was offline during the first scan.
+   if you want coarser/finer control, set **Press** to *Toggle mute* (default)
+   or *Play / Pause* to choose what the knob click does, and use **Rescan
+   network** if a speaker was offline during the first scan. In play/pause mode
+   the LCD icon switches to a pause glyph while playback is paused.
 
 ## How it works
 
@@ -100,7 +103,10 @@ com.ditto.sonos.sdPlugin/
 ## Icons
 
 The icons are white, transparent renderings of Apple **SF Symbols**
-(`speaker.wave.3.fill`, `speaker.slash.fill`). On macOS you can regenerate them:
+(`speaker.wave.3.fill`, `speaker.slash.fill`). SF Symbols has no speaker+pause
+glyph, so the paused icon is composited from the volume icon's speaker plus
+drawn pause bars (`tools/render-paused.swift`). On macOS you can regenerate
+them all:
 
 ```bash
 ./tools/render-icons.sh    # requires macOS + Swift (Xcode / Command Line Tools)

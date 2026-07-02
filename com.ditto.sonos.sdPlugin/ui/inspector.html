@@ -55,6 +55,13 @@
     <span class="hint">% per click</span>
   </div>
   <div class="row">
+    <div class="label">Press</div>
+    <select id="press">
+      <option value="mute">Toggle mute</option>
+      <option value="playpause">Play / Pause</option>
+    </select>
+  </div>
+  <div class="row">
     <div class="label"></div>
     <div class="status" id="status"></div>
   </div>
@@ -137,6 +144,7 @@
 
     function applySettings() {
       document.getElementById("step").value = settings.step || 2;
+      document.getElementById("press").value = settings.pressAction || "mute";
     }
 
     document.getElementById("speaker").addEventListener("change", function () {
@@ -156,6 +164,11 @@
       v = Math.max(1, Math.min(20, v));
       this.value = v;
       settings.step = v;
+      saveSettings();
+    });
+
+    document.getElementById("press").addEventListener("change", function () {
+      settings.pressAction = this.value;
       saveSettings();
     });
 

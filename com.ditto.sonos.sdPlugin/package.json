@@ -1,6 +1,6 @@
 {
   "name": "ditto-sonos-volume-knob",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "commonjs",
   "dependencies": { "sonos": "^1.14.0", "ws": "^8.18.0" }
