@@ -97,10 +97,24 @@ com.ditto.sonos.sdPlugin/
 > The plugin UUID is `com.ditto.sonos`. If you fork this, feel free to rename it
 > (folder name, `manifest.json` UUID, and the action UUID must match).
 
+## Icons
+
+The icons are white, transparent renderings of Apple **SF Symbols**
+(`speaker.wave.3.fill`, `speaker.slash.fill`). On macOS you can regenerate them:
+
+```bash
+./tools/render-icons.sh    # requires macOS + Swift (Xcode / Command Line Tools)
+```
+
+> Note: SF Symbols are provided by Apple under their own license terms. If you
+> redistribute this plugin outside a personal/macOS context, swap in your own
+> glyphs (`tools/sfrender.swift` shows the rendering approach).
+
 ## Credits
 
 - [`sonos`](https://github.com/bencevans/node-sonos) — local Sonos UPnP control
   and SSDP discovery.
+- Icons: Apple SF Symbols.
 - Built for the Elgato Stream Deck SDK (v2).
 
 ## License
